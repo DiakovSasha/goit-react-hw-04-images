@@ -1,36 +1,32 @@
-import { Component } from 'react';
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import css from './Modal.module.css';
 
-export default class Modal extends Component {
-  componentDidMount() {
-    window.addEventListener('keydown', this.onCloseEscape);
-  }
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.onCloseEscape);
-  }
-  onCloseEscape = e => {
+export default function Modal({ onToggle, image }) {
+  const { largeImageURL, tags } = image;
+
+  useEffect(() => {
+    window.addEventListener('keydown', onCloseEscape);
+    return () => window.removeEventListener('keydown', onCloseEscape);
+  });
+  const onCloseEscape = e => {
     if (e.code === 'Escape') {
-      this.props.onToggle();
+      onToggle();
       console.log(e.code);
     }
   };
-  onBackdropClick = event => {
+  const onBackdropClick = event => {
     if (event.target === event.currentTarget) {
-      this.props.onToggle();
+      onToggle();
     }
   };
-  render() {
-    const { largeImageURL, tags } = this.props.image;
-   
-    return (
-      <div className={css.Overlay} onClick={this.onBackdropClick}>
-        <div className={css.Modal}>
-          <img src={largeImageURL} alt={tags} />
-        </div>
+  return (
+    <div className={css.Overlay} onClick={onBackdropClick}>
+      <div className={css.Modal}>
+        <img src={largeImageURL} alt={tags} />
       </div>
-    );
-  }
+    </div>
+  );
 }
 Modal.propTypes = {
   image: PropTypes.shape({
